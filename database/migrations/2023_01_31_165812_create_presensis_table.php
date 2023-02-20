@@ -18,10 +18,11 @@ class CreatePresensisTable extends Migration
             $table->char('nik');
             $table->date('tgl_presensi');
             $table->time('jam_in');
-            $table->time('jam_out');
+            $table->time('jam_out')->nullable();
             $table->string('foto_in');
-            $table->string('foto_out');
-            $table->text('location');
+            $table->string('foto_out')->nullable();
+            $table->text('lokasi_in');
+            $table->text('lokasi_out')->nullable();
             $table->timestamps();
         });
     }

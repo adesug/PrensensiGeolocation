@@ -1,5 +1,5 @@
 <div class="appBottomMenu">
-    <a href="/dashboard" class="item {{request()->is('dashboard') ? 'active' : ''}}">
+    <a href="{{route('dashboard')}}" class="item {{request()->is('dashboard') ? 'active' : ''}}">
         <div class="col">
             <ion-icon name="home-outline"></ion-icon>
             <strong>Home</strong>
@@ -12,7 +12,7 @@
             <strong>Calendar</strong>
         </div>
     </a>
-    <a href="/presensi/create" class="item">
+    <a href="{{route('presensiCreate')}}" class="item">
         <div class="col">
             <div class="action-button large">
                 <ion-icon name="camera" role="img" class="md hydrated" aria-label="add outline"></ion-icon>

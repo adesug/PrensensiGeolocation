@@ -24,11 +24,14 @@ Route::middleware(['guest:karyawan'])->group(function() {
         return view('auth.login');
     })->name('halamanLogin');
     
-    Route::post('/proseslogin',[AuthController::class,'prosesLogin']);
+    Route::post('/proseslogin',[AuthController::class,'prosesLogin'])->name('prosesLogin');
 });
 
 Route::middleware(['auth:karyawan'])->group(function(){
     Route::get('/dashboard',[DashboardController::Class,'index'])->name('dashboard');
-    Route::get('/proseslogout',[AuthController::class,'prosesLogout']);
-    Route::get('/presensi/create',[PresensiController::class,'create']);
+    Route::get('/proseslogout',[AuthController::class,'prosesLogout'])->name('logout');
+
+    Route::get('/presensi/create',[PresensiController::class,'create'])->name('presensiCreate');
+    Route::post('/presensi/store',[PresensiController::class,'store'])->name('presensiStore');
+
 });

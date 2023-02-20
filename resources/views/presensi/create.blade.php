@@ -20,7 +20,7 @@
             border-radius: 15px; 
             
         }
-        #map { height: 200px; }
+        #map { height: 500px; }
 </style>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
 integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI="
@@ -39,7 +39,12 @@ crossorigin=""></script>
 </div>
 <div class="row">
     <div class="col">
-        <button id="takeabsen" class="btn btn-primary btn-block"> <ion-icon name="camera-outline"></ion-icon>Absen Masuk</button>
+        @if($cek > 0) 
+            <button id="takeabsen" class="btn btn-danger btn-block"> <ion-icon name="camera-outline"></ion-icon>Absen Pulang</button>
+        @else
+            <button id="takeabsen" class="btn btn-primary btn-block"> <ion-icon name="camera-outline"></ion-icon>Absen Masuk</button>
+
+        @endif
     </div>
 </div>
 <div class="row mt-2">
@@ -47,10 +52,23 @@ crossorigin=""></script>
         <div id="map"></div>
     </div>
 </div>
+<audio id="notifikasi_in">
+    <source src="{{asset('assets/sound/BotikaTTS.mp3')}}" type="audio/mpeg">
+</audio>
+
+<audio id="notifikasi_out">
+    <source src="{{asset('assets/sound/BotikaTTS_OUT.mp3')}}" type="audio/mpeg">
+</audio>
+<audio id="notifikasi_radius">
+    <source src="{{asset('assets/sound/SoundRadius.mp3')}}" type="audio/mpeg">
+</audio>
 @endsection
 
 @push('myscript')
     <script>
+        var notifikasi_in = document.getElementById('notifikasi_in')
+        var notifikasi_out = document.getElementById('notifikasi_out')
+        var notifikasi_radius = document.getElementById('notifikasi_radius')
         Webcam.set({
             height: 480,
             width: 640,
@@ -68,11 +86,11 @@ crossorigin=""></script>
             lokasi.value = position.coords.latitude + ',' + position.coords.longitude;
             var map = L.map('map').setView([position.coords.latitude , position.coords.longitude], 18);
             L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19,
+                maxZoom: 20,
                 attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
             }).addTo(map);
             var marker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(map);
-            var circle = L.circle([position.coords.latitude, position.coords.longitude], {
+            var circle = L.circle([-6.9173019768128485,107.61007456296822], {
                 color: 'red',
                 fillColor: '#f03',
                 fillOpacity: 0.5,
@@ -82,6 +100,54 @@ crossorigin=""></script>
         function errorCallback() {
 
         }
+
+        $('#takeabsen').click(function(e) {
+           Webcam.snap(function(uri){
+            image = uri;
+           });
+           var lokasi = $('#lokasi').val()
+        //    alert(lokasi)
+        $.ajax({
+            type:'POST',
+            url:'/presensi/store',
+            data: {
+                _token:"{{csrf_token()}}",
+                image:image,
+                lokasi:lokasi
+            },
+            cache:false,
+            success:function(respond){
+                var status = respond.split("|");
+
+                if(status[0] == "success") {
+                    if(status[2] == 'in'){
+                        notifikasi_in.play();
+                    }else {
+                        notifikasi_out.play();
+                        
+                    }
+                    Swal.fire({
+                        title: 'Success!',
+                        text: status[1],
+                        icon: 'success',
+                    });
+                    setTimeout("location.href='/dashboard'",3000);
+                }else{
+                    if(status[2] == "radius") {
+                        notifikasi_radius.play();
+                    }
+                    Swal.fire({
+                        title: 'Error!',
+                        text: status[1],
+                        icon: 'error',
+                    })
+                    
+                    // setTimeout('location.href='/dashboard'',3000);
+                }
+            }
+        })
+        });
+
     </script>
 
 @endpush
