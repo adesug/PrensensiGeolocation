@@ -40,4 +40,10 @@ Route::middleware(['auth:karyawan'])->group(function(){
     //histori
     Route::get('/presensi/histori',[PresensiController::class,'histori'])->name('histori');
     Route::post('/getHistori',[PresensiController::class,'getHistori'])->name('getHistori');
+
+    //izin
+    Route::get('/presensi/izin',[PresensiController::class,'izin'])->name('izin');
+    Route::get('/presensi/buatizin',[PresensiController::class,'buatizin'])->name('izin');
+    Route::post('/presensi/storeIzin',[PresensiController::class,'storeizin'])->name('storeIzin');
+
 });
