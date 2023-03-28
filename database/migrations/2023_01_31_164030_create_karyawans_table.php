@@ -20,6 +20,7 @@ class CreateKaryawansTable extends Migration
             $table->string('jabatan');
             $table->string('no_hp');
             $table->string('password');
+            $table->string('foto')->nullable();
             $table->string('remember_token')->nullable();
             $table->timestamps();
         });
