@@ -7,7 +7,7 @@
                 <ion-icon name="chevron-back-outline"></ion-icon>
             </a>
         </div>
-        <div class="pageTitle">Edir Profile</div>
+        <div class="pageTitle">Edit Profile</div>
         <div class="right"></div>
     </div>
 {{-- form --}}
