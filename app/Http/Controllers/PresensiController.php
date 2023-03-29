@@ -173,9 +173,12 @@ class PresensiController extends Controller
       
     }
     public function izin(Request $request) {
-        return view('presensi.izin');
+        $nik = Auth::guard('karyawan')->user()->nik;
+        $dataizin = DB::table('pengajuan_izins')->where('nik',$nik)->get();
+        return view('presensi.izin',compact('dataizin'));
     }
     public function buatizin(Request $request) {
+      
         return view('presensi.buatizin');
     }
     public function storeIzin(Request $request) {

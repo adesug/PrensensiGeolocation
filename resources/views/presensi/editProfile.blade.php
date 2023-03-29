@@ -17,7 +17,7 @@
 <div class="row" style="margin-top:4rem">
     <div class="col">
         @php
-            $messagesuccess = Session::get('success')
+            $messagesuccess = Session::get('success');
             $messageerror = Session::get('error')
         @endphp
         @if(Session::get('success'))
