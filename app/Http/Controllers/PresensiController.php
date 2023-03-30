@@ -120,7 +120,7 @@ class PresensiController extends Controller
             $file = $request->file('foto');
             $foto = $nik . "." . time() . '.' .$file->getClientOriginalExtension();
           
-            $tes= Storage::disk('s3')->put('images/' . $foto, file_get_contents($file));
+            $tes= Storage::disk('s3')->put('images/' . $foto, fopen($file,'r+'));
             $url = "https://desug27.s3.ap-southeast-1.amazonaws.com/images/";
             $foto2 = $url.$foto;
             // dd($url.$foto);
