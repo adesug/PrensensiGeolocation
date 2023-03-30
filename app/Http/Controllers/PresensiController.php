@@ -116,34 +116,48 @@ class PresensiController extends Controller
         $password = Hash::make($request->password);
         $karyawan = DB::table('karyawans')->where('nik',$nik)->first();
 
-        if($request->hasFile('foto')){
-            $foto = $nik . "." . $request->file('foto')->getClientOriginalExtension();
+        if($request->hasfile('foto')) {
+            $file = $request->file('foto');
+            $foto = $nik . "." . time() . '.' .$file->getClientOriginalExtension();
+          
+            $tes= Storage::disk('s3')->put('images/' . $foto, file_get_contents($file));
+            $url = "https://desug27.s3.ap-southeast-1.amazonaws.com/images/";
+            $foto2 = $url.$foto;
+            // dd($url.$foto);
+            // dd($tes);
+           
         }else {
-            $foto = $karyawan->foto;
+            $foto  = $karyawan->foto;
         }
+
+        // if($request->hasFile('foto')){
+        //     $foto = $nik . "." . $request->file('foto')->getClientOriginalExtension();
+        // }else {
+        //     $foto = $karyawan->foto;
+        // }
 
         if(empty($requets->password)) {
             $data = [
                 'nama_lengkap' => $nama_lengkap,
                 'no_hp' => $no_hp,  
-                'foto' => $foto
+                'foto' => $foto2
             ];
         }else{
             $data = [
                 'nama_lengkap' => $nama_lengkap,
                 'no_hp' => $no_hp,
                 'password' => $password,
-                'foto' => $foto
+                'foto' => $foto2,
             ];
         }
 
         $update = DB::table('karyawans')->where('nik',$nik)->update($data);
 
         if($update) {
-            if($request->hasFile('foto')){
-                $folderPath = "public/uploads/karyawan/"; 
-                $request->file('foto')->storeAs($folderPath,$foto);
-            }
+            // if($request->hasFile('foto')){
+            //     $folderPath = "public/uploads/karyawan/"; 
+            //     $request->file('foto')->storeAs($folderPath,$foto);
+            // }
             return Redirect::back()->with(['success'=>'Data berhasil diupdate']);
         }else{
             return Redirect::back()->with(['error'=>'Data gagal diupdate']);

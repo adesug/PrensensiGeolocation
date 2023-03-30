@@ -7,7 +7,7 @@
                 @php
                     $path= Storage::url('uploads/karyawan/'.Auth::guard('karyawan')->user()->foto)
                 @endphp
-                <img src="{{url($path)}}" alt="avatar" class="imaged w64 rounded" style="height: 60px">
+                <img src="{{Auth::guard('karyawan')->user()->foto}}" alt="avatar" class="imaged w64 rounded" style="height: 60px">
 
             @elseif(Auth::guard('karyawan')->user()->foto ==  null )
                 <img src="assets/img/sample/avatar/avatar1.jpg" alt="avatar" class="imaged w64 rounded">
@@ -17,7 +17,9 @@
             <h2 id="user-name">{{Auth::guard('karyawan')->user()->nama_lengkap}}</h2>
             <span id="user-role">{{Auth::guard('karyawan')->user()->jabatan}}</span>
         </div>
+        
     </div>
+    
 </div>
 
 <div class="section" id="menu-section">
@@ -36,7 +38,7 @@
                 </div>
                 <div class="item-menu text-center">
                     <div class="menu-icon">
-                        <a href="/presensi/izin" class="danger" style="font-size: 40px;">
+                        <a href="/  presensi/izin" class="danger" style="font-size: 40px;">
                             <ion-icon name="calendar-number"></ion-icon>
                         </a>
                     </div>
