@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Intervention\Image\ImageManagerStatic as Image;
 use Redirect;
 
 
@@ -119,10 +120,26 @@ class PresensiController extends Controller
         if($request->hasfile('foto')) {
             $file = $request->file('foto');
             $foto = $nik . "." . time() . '.' .$file->getClientOriginalExtension();
-          
-            $tes= Storage::disk('s3')->put('images/' . $foto, fopen($file,'r+'));
-            $url = "https://desug27.s3.ap-southeast-1.amazonaws.com/images/";
-            $foto2 = $url.$foto;
+
+            // dd($file2);
+            if(Image::make($file)->width() > 100) {
+                $extension = $request->file('foto')->getClientOriginalExtension();
+                $normal = Image::make($request->file('foto'))->resize(90, 90)->encode($extension);
+                $path = $request->file("foto")->store("images", "s3");
+                $tes= Storage::disk('s3')->put('images/' . $foto, (string)$normal, 'public');
+              $image = basename($foto);
+            //   dd($image);
+               $image_url = Storage::disk("s3")->url($tes);
+                // dd($image_url);
+                $url = substr($image_url,0,-1);
+                $foto2 = $url.$image;
+            }else{
+                $tes= Storage::disk('s3')->put('images/' . $foto, fopen($file,'r+'));
+                $url = "https://desug27.s3.ap-southeast-1.amazonaws.com/images/";
+                $foto2 = $url.$foto;
+            }
+           
+           
             // dd($url.$foto);
             // dd($tes);
            
