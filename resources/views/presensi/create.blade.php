@@ -66,6 +66,9 @@ crossorigin=""></script>
 
 @push('myscript')
     <script>
+        Swal.fire(
+            '',
+            'Aktifkan izin akses lokasi & Pastikan lokasimu aktif');
         var notifikasi_in = document.getElementById('notifikasi_in')
         var notifikasi_out = document.getElementById('notifikasi_out')
         var notifikasi_radius = document.getElementById('notifikasi_radius')
