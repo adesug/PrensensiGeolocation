@@ -64,10 +64,16 @@
                     </strong>
                 </span>
             </label>
+            <p id="error1" style="display:none; color:#FF0000;">
+                Invalid Image Format! Image Format Must Be JPG, JPEG, PNG or GIF.
+            </p>
+            <p id="error2" style="display:none; color:#FF0000;">
+                Maximum File Size Limit is 1MB.
+            </p>
         </div>
         <div class="form-group boxed">
             <div class="input-wrapper">
-                <button type="submit" class="btn btn-primary btn-block">
+                <button name="submit" id="submit" type="submit" class="btn btn-primary btn-block">
                     <ion-icon name="refresh-outline"></ion-icon>
                     Update
                 </button>
@@ -78,17 +84,34 @@
 @endsection
 @push('mysript')
 <script>
-    $(document).ready(function () {
-        console.log('tes');
-        var uploadField = document.getElementById("#fileuploadInput");
+        $('input[type="submit"]').prop("disabled", true);
+        var a = 0;
+        //binds to onchange event of your input field
+        $('#fileuploadInput').bind('change', function () {
+            if ($('input:submit').attr('disabled', false)) {
+                $('input:submit').attr('disabled', true);
+            }
+            var ext = $('#fileuploadInput').val().split('.').pop().toLowerCase();
+            if ($.inArray(ext, ['gif', 'png', 'jpg', 'jpeg']) == -1) {
+                $('#error1').slideDown("slow");
+                $('#error2').slideUp("slow");
+                a = 0;
+            } else {
+                var picsize = (this.files[0].size);
+                if (picsize > 1000000) {
+                    $('#error2').slideDown("slow");
+                    a = 0;
+                } else {
+                    a = 1;
+                    $('#error2').slideUp("slow");
+                }
+                $('#error1').slideUp("slow");
+                if (a == 1) {
+                    $('input:submit').attr('disabled', false);
+                }
+            }
+        });
 
-        uploadField.onchange = function () {
-            if (this.files[0].size > 2097152) {
-                alert("File is too big!");
-                this.value = "";
-            };
-        };
-    })
 
 </script>
 @endpush

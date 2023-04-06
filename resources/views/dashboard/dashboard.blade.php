@@ -79,10 +79,11 @@
                         <div class="presencecontent">
                             <div class="iconpresence">
                                 @if($presensiHariIni != null)
-                                    @php
+                                    {{-- @php
                                         $path   =  Storage::url('uploads/absensi/' .$presensiHariIni->foto_in)
-                                    @endphp
-                                    <img class="imaged w48" src="{{url($path)}}" alt="foto_absen">
+                                    @endphp --}}
+                                    {{-- {{url($path)}} --}}
+                                    <img class="imaged w48" src="{{$presensiHariIni->foto_in}}" alt="foto_absen">
                                 @else
                                 <ion-icon name="camera"></ion-icon>
 
@@ -102,10 +103,10 @@
                         <div class="presencecontent">
                             <div class="iconpresence">
                                 @if($presensiHariIni != null && $presensiHariIni->jam_out != null)
-                                    @php
+                                    {{-- @php
                                         $path   =  Storage::url('uploads/absensi/' .$presensiHariIni->foto_out)
-                                    @endphp
-                                    <img class="imaged w48" src="{{url($path)}}" alt="foto_absen">
+                                    @endphp --}}
+                                    <img class="imaged w48" src="{{$presensiHariIni->foto_out}}" alt="foto_absen">
                                 @else
                                 <ion-icon name="camera"></ion-icon>
 

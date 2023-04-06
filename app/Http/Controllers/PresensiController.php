@@ -53,47 +53,57 @@ class PresensiController extends Controller
         $radius =  round($jarak["meters"]);
         $cek= DB::table('presensis')->where('tgl_presensi', $tgl_presensi)->where('nik',$nik)->count();
         if( $cek > 0 ) {
-            $ket = "in";
-        }else {
             $ket = "out";
+        }else {
+            $ket = "in";
         }
         $image = $request->image;
         $folderPath = "public/uploads/absensi/";
         $formatName = $nik . "-" . $tgl_presensi . "-" . $ket;
-        $image_parts = explode(";base64", $image);
-        $image_base64 = base64_decode($image_parts[1]);
+        // $image_parts = explode(";base64", $image);
+        // $image_base64 = base64_decode($image_parts[1]);
         $fileName = $formatName . ".png" ;
-        $file = $folderPath . $fileName ;
+        // $file = $folderPath . $fileName ;
 
         if($radius > 20 ) {
             echo "error|Mohon maaf jarak anda diluar radius, jarak anda " .$radius. " meter dari kantor|radius";
         }else {
             if($cek > 0 ) {
+                $store = Storage::disk('s3')->put('absenPulang/'.$fileName, fopen($image,'r+'));
+                $url_image = Storage::disk('s3')->url($store);
+                $replace_url_image = substr($url_image,0,-1);
+                $foto2 = $replace_url_image.'absenPulang/'.$fileName;
                 $data_pulang = [
                     'jam_out' => $jam,
-                    'foto_out' => $fileName,
+                    'foto_out' => $foto2,
                     'lokasi_out' => $lokasi,
                 ];
                 $update = DB::table('presensis')->where('tgl_presensi',$tgl_presensi)->where('nik',$nik)->update($data_pulang);
                 if($update) {
                     echo "success|Terimakasih, Hati Hati Di jalan|out";
-                    Storage::put($file, $image_base64);
+                    // Storage::put($file, $image_base64);
                 }else {
                     echo 'error|Maaf Gagal Absen, Hubungi Tim IT|out';
                 }
             }else {
+                $store = Storage::disk('s3')->put('absenMasuk/'.$fileName, fopen($image,'r+'));
+                $url_image = Storage::disk('s3')->url($store);
+                $replace_url_image = substr($url_image,0,-1);
+                $foto2 = $replace_url_image.'absenMasuk/'.$fileName;
+                // dd($tes);
                 $data = [
                     'nik' => $nik,
                     'tgl_presensi' => $tgl_presensi, 
                     'jam_in' => $jam,
-                    'foto_in' => $fileName,
+                    'foto_in' => $foto2,
                     'lokasi_in' => $lokasi,
                 ];
                
                 $simpan = DB::table('presensis')->insert($data);
                 if($simpan) {
                     echo "success|Terimakasih, Selamat Bekerja|in";
-                    Storage::put($file, $image_base64);
+                    // Storage::put($file, $image_base64);
+                   
                 }else {
                     echo 'error|Maaf Gagal Absen, Hubungi Tim IT|in';
                 }
@@ -110,7 +120,7 @@ class PresensiController extends Controller
 
         return view('presensi.editProfile', compact('karyawan'));
     }
-    public function updateProfile(Request $request) {
+    public function updateProfile(Request $request) { 
         $nik = Auth::guard('karyawan')->user()->nik;
         $nama_lengkap = $request->nama_lengkap;
         $no_hp = $request->no_hp;
@@ -120,31 +130,34 @@ class PresensiController extends Controller
         if($request->hasfile('foto')) {
             $file = $request->file('foto');
             $foto = $nik . "." . time() . '.' .$file->getClientOriginalExtension();
-
+            // $url="https://desug27.s3.ap-southeast-1.amazonaws.com/";
+            // $hasilUrl = $url.'images/'.$foto;
+            $store = Storage::disk('s3')->put('images/' . $foto, fopen($file,'r+'));
+            $url_image = Storage::disk('s3')->url($store);
+            $replace_url_image = substr($url_image,0,-1);
+            $foto2 = $replace_url_image.'images/'.$foto;
             // dd($file2);
-            if(Image::make($file)->width() > 100) {
-                $extension = $request->file('foto')->getClientOriginalExtension();
-                $normal = Image::make($request->file('foto'))->resize(90, 90)->encode($extension);
-                $path = $request->file("foto")->store("images", "s3");
-                $tes= Storage::disk('s3')->put('images/' . $foto, (string)$normal, 'public');
-              $image = basename($foto);
-            //   dd($image);
-               $image_url = Storage::disk("s3")->url($tes);
-                // dd($image_url);
-                $url = substr($image_url,0,-1);
-                $foto2 = $url.$image;
-            }else{
-                $tes= Storage::disk('s3')->put('images/' . $foto, fopen($file,'r+'));
-                $url = "https://desug27.s3.ap-southeast-1.amazonaws.com/images/";
-                $foto2 = $url.$foto;
-            }
-           
-           
+            // if(Image::make($file)->width() > 100) {
+            //     $extension = $request->file('foto')->getClientOriginalExtension();
+            //     $normal = Image::make($request->file('foto'))->resize(90, 90)->encode($extension);
+            //     $path = $request->file("foto")->store("images", "s3");
+            //     $tes= Storage::disk('s3')->put('images/' . $foto, (string)$normal, 'public');
+            //   $image = basename($foto);
+            // //   dd($image);
+            //    $image_url = Storage::disk("s3")->url($tes);
+            //     // dd($image_url);
+            //     $url = substr($image_url,0,-1);
+            //     $foto2 = $url.$image;
+            // }else{
+            //     $tes= Storage::disk('s3')->put('images/' . $foto, fopen($file,'r+'));
+            //     $url = "https://desug27.s3.ap-southeast-1.amazonaws.com/images/";
+            //     $foto2 = $url.$foto;
+            // }
             // dd($url.$foto);
             // dd($tes);
            
         }else {
-            $foto  = $karyawan->foto;
+            $foto2  = $karyawan->foto;
         }
 
         // if($request->hasFile('foto')){
