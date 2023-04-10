@@ -41,4 +41,7 @@ class DashboardController extends Controller
         ->first() ;
         return view('dashboard.dashboard',compact('presensiHariIni','historiBulanIni','namaBulan','bulanIni','tahunIni','rekapPresensi','leaderboard','rekapizin'));
     }
+    public function dashboardadmin(){
+        return view('dashboard.dashboardadmin');
+    }
 }
